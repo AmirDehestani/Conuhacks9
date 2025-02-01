@@ -5,7 +5,6 @@ import NavBar from './components/NavBar';
 import Footer from './components/footer';
 import LobbySetup from './components/LobbySetup';
 import HowToPlay from './components/HowToPlay';
-import Lobby from './components/Lobby';
 import Test from './components/Test';
 import Lobby from './components/Lobby';
 import Game from './components/Game';
@@ -20,7 +19,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/howtoplay" element={<HowToPlay/>} />
             <Route path="/lobby-setup" element={<LobbySetup />} />
-            <Route path="/lobby" element={<div>Lobby Page</div>} />
+            <Route path="/lobby" element={<Lobby />} />
           </Routes>
         </div>
         <Footer />
