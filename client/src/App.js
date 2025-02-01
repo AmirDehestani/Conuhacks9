@@ -4,11 +4,8 @@ import Home from './components/Home';
 import NavBar from './components/NavBar';
 import Footer from './components/footer';
 import LobbySetup from './components/LobbySetup';
-<<<<<<< Updated upstream
 import HowToPlay from './components/HowToPlay';
-=======
 import Lobby from './components/Lobby';
->>>>>>> Stashed changes
 
 function App() {
   return (
