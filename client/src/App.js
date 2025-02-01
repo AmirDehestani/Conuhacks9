@@ -8,24 +8,38 @@ import HowToPlay from './components/HowToPlay';
 import Test from './components/Test';
 import Lobby from './components/Lobby';
 import Game from './components/Game';
+import { LobbyProvider } from './contexts/LobbyContext';
+import { UsersProvider } from './contexts/UsersContext';
 
 function App() {
-  return (
-    <Router>
-      <div className='App bg-gradient-to-b from-[#7D00C6] to-[#DF00A4] min-h-screen flex flex-col'>
-        <div className='content flex-grow'>
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/howtoplay" element={<HowToPlay/>} />
-            <Route path="/lobby-setup" element={<LobbySetup />} />
-            <Route path="/lobby" element={<Lobby />} />
-          </Routes>
-        </div>
-        <Footer />
-      </div>
-    </Router>
-  );
+    return (
+        <LobbyProvider>
+            <UsersProvider>
+                <Router>
+                    <div className="App bg-gradient-to-b from-[#7D00C6] to-[#DF00A4] min-h-screen flex flex-col">
+                        <div className="content flex-grow">
+                            <NavBar />
+                            <Routes>
+                                <Route path="/" element={<Home />} />
+                                <Route
+                                    path="/howtoplay"
+                                    element={<HowToPlay />}
+                                />
+                                <Route
+                                    path="/lobby-setup"
+                                    element={<LobbySetup />}
+                                />
+                                <Route path="/lobby" element={<Lobby />} />
+                                <Route path="/test" element={<Test />} />
+                                <Route path="/game" element={<Game />} />
+                            </Routes>
+                        </div>
+                        <Footer />
+                    </div>
+                </Router>
+            </UsersProvider>
+        </LobbyProvider>
+    );
 }
 
 export default App;

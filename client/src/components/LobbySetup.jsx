@@ -1,16 +1,16 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { io } from 'socket.io-client';
 import { useNavigate } from 'react-router-dom';
+import { LobbyContext } from '../contexts/LobbyContext.js';
+import { UsersContext } from '../contexts/UsersContext.js';
 
 export const socket = io('http://localhost:5000');
-
-let lobbyCode = "";
 
 function LobbySetup() {
     const [activeSection, setActiveSection] = useState('createLobby');
     const [playerName, setPlayerName] = useState('');
-    const [lobbyCode, setLobbyCode] = useState('');
+    const { lobbyCode, setLobbyCode } = useContext(LobbyContext);
+    const { setUsersList } = useContext(UsersContext);
     const navigate = useNavigate();
 
     function activateCreateLobbySection() {
@@ -25,6 +25,8 @@ function LobbySetup() {
         socket.emit('createLobby', playerName.trim(), (response) => {
             if (response.status === 'Success') {
                 console.log(`Lobby created by: ${playerName}`);
+                setLobbyCode(response.lobbyCode);
+                setUsersList(response.players);
                 navigate('/lobby');
             }
             console.log(response.error);
@@ -38,6 +40,7 @@ function LobbySetup() {
             (response) => {
                 if (response.status === 'Success') {
                     console.log(`Lobby join by: ${playerName}`);
+                    setUsersList(response.players);
                     navigate('/lobby');
                 }
                 console.log(response.error);

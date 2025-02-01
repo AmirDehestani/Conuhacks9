@@ -35,8 +35,12 @@ export const setupSocket = (server) => {
             lobbies[lobbyId].players.push({ id: socket.id, name: playerName });
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
-            callback({ status: 'Success', lobbyCode: lobbyId });
-            return;
+            callback({
+                status: 'Success',
+                lobbyCode: lobbyId,
+                players: lobbies[lobbyId].players,
+            });
+            io.to(lobbyId).emit('usersList', lobbies[lobbyId].players); // For existing players to see the new player
         });
 
         socket.on('joinLobby', ({ lobbyId, playerName }, callback) => {
@@ -58,8 +62,8 @@ export const setupSocket = (server) => {
             lobbies[lobbyId].players.push({ id: socket.id, name: playerName });
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
-            callback({ status: 'Success' });
-            return;
+            callback({ status: 'Success', players: lobbies[lobbyId].players });
+            io.to(lobbyId).emit('usersList', lobbies[lobbyId].players); // For existing players to see the new player
         });
 
         socket.on('post-message', ({ lobbyId, userId, message }, callback) => {
@@ -138,6 +142,9 @@ export const setupSocket = (server) => {
                 delete lobbies[lobbyId]; // Delete the lobby if no players left
             } else if (lobby.hostId === socket.id) {
                 lobby.hostId = lobby.players[0].id; // Assign a new host if the host leaves
+                io.to(lobbyId).emit('usersList', lobby.players);
+            } else {
+                io.to(lobbyId).emit('usersList', lobby.players);
             }
         });
     });
