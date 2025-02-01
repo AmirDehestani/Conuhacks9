@@ -17,7 +17,7 @@ function Home() {
             It has survived not only five.
           </div> 
           
-          <a href='/createjoin' className='cherrybomb text-white px-5 py-2 bg-[rgba(255,255,255,0.25)] w-[120px] rounded-[5px] shadow-md mt-3 hover:scale-[105%] cursor-pointer ease-in-out duration-300'>Play Game</a>
+          <a href='/lobby-setup' className='cherrybomb text-white px-5 py-2 bg-[rgba(255,255,255,0.25)] w-[120px] rounded-[5px] shadow-md mt-3 hover:scale-[105%] cursor-pointer ease-in-out duration-300'>Play Game</a>
         </div>
         
         <div>
