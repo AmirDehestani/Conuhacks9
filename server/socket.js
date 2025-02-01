@@ -108,6 +108,7 @@ export const setupSocket = (server) => {
         });
 
         socket.on('disconnect', () => {
+            console.log(`User disconnected: ${socket.id}`);
             const lobbyId = users[socket.id];
 
             if (!lobbyId) {

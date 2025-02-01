@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { io } from 'socket.io-client'
+import { io } from 'socket.io-client';
 
 const socket = io('http://localhost:5000');
 
@@ -15,46 +15,46 @@ function Test() {
         socket.emit('createLobby', playerName.trim(), (response) => {
             if (response.status === 'Success') {
                 console.log(`Lobby created by: ${playerName}`);
-                navigate('/lobby')
+                navigate('/lobby');
             }
             console.log(response.error);
         });
     }
 
-    function joinLobby() {    
-        socket.emit('joinLobby', {lobbyId: lobbyCode, playerName: playerName.trim()}, (response) => {
-            if (response.status === 'Success') {
-                console.log(`Lobby join by: ${playerName}`);
-                navigate('/lobby')
+    function joinLobby() {
+        socket.emit(
+            'joinLobby',
+            { lobbyId: lobbyCode, playerName: playerName.trim() },
+            (response) => {
+                if (response.status === 'Success') {
+                    console.log(`Lobby join by: ${playerName}`);
+                    navigate('/lobby');
+                }
+                console.log(response.error);
             }
-            console.log(response.error);
-        });
-      }
+        );
+    }
 
-  return (
-    <div>
-        <h1>Test Page</h1>
-        <input 
-            type="text" 
-            placeholder="Enter your name" 
-            value={playerName} 
-            onChange={(e) => setPlayerName(e.target.value)}
-        />
-        <button onClick={createLobby}>
-            Create Lobby
-        </button>
-        <hr />
-        <input 
-            type="text" 
-            placeholder="Enter lobby code" 
-            value={lobbyCode} 
-            onChange={(e) => setLobbyCode(e.target.value)}
-        />
-        <button onClick={joinLobby}>
-            Join Lobby
-        </button>
-    </div>
-  )
+    return (
+        <div>
+            <h1>Test Page</h1>
+            <input
+                type="text"
+                placeholder="Enter your name"
+                value={playerName}
+                onChange={(e) => setPlayerName(e.target.value)}
+            />
+            <button onClick={createLobby}>Create Lobby</button>
+            <hr />
+            <input
+                type="text"
+                placeholder="Enter lobby code"
+                value={lobbyCode}
+                onChange={(e) => setLobbyCode(e.target.value)}
+            />
+            <button onClick={joinLobby}>Join Lobby</button>
+        </div>
+    );
 }
 
-export default Test
+export default Test;
