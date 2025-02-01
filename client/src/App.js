@@ -4,7 +4,11 @@ import Home from './components/Home';
 import NavBar from './components/NavBar';
 import Footer from './components/footer';
 import LobbySetup from './components/LobbySetup';
+<<<<<<< Updated upstream
 import HowToPlay from './components/HowToPlay';
+=======
+import Lobby from './components/Lobby';
+>>>>>>> Stashed changes
 
 function App() {
   return (
@@ -16,7 +20,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/howtoplay" element={<HowToPlay/>} />
             <Route path="/lobby-setup" element={<LobbySetup />} />
-            <Route path="/lobby" element={<div>Lobby Page</div>} />
+            <Route path="/lobby" element={<Lobby/>} />
           </Routes>
         </div>
         <Footer />
