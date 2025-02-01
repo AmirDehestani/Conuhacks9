@@ -45,7 +45,7 @@ function LobbySetup() {
                     </div>
 
                     <div className='mt-5'>
-                        <button className='cherrybomb text-white bg-[rgba(255,255,255,0.25)] px-5 py-1 rounded-[5px] shadow-md hover:scale-[105%] cursor-pointer ease-in-out duration-300'>Create Lobby</button>
+                        <a href='/lobby' className='cherrybomb text-white bg-[rgba(255,255,255,0.25)] px-5 py-1 rounded-[5px] shadow-md hover:scale-[105%] cursor-pointer ease-in-out duration-300'>Create Lobby</a>
                     </div>
 
                 </div> : activeSection === 'joinLobbyCode'?
