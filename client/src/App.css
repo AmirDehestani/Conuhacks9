@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.cherrybomb {
+  font-family: "Cherry Bomb One", serif;
+  font-weight: 400;
+  font-style: normal;
+}
