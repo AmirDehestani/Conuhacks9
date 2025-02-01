@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
-
-const socket = io('http://localhost:5000');
+import { socket } from './LobbySetup';
 
 //import { createLobby, joinLobby } from '../services/lobbyServices';
 
