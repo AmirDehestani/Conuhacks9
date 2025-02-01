@@ -15,34 +15,36 @@ export const setupSocket = (server) => {
         console.log(`User connected: ${socket.id}`);
 
         // Create a lobby
-        socket.on('createLobby', (playerName) => {
+        socket.on('createLobby', (playerName, callback) => {
             const lobbyId = nanoid(8);
-            console.log(`User: ${socket.id} created the lobby ${lobbyId}`);
-            if(playerName)
+            if(!playerName)
             {
-                lobbies[lobbyId] = {players: [], hostId: socket.id, items: [], currentTurnIndex: 0};
-                lobbies[lobbyId].players.push({id: socket.id, name: playerName});
-                socket.join(lobbyId);
-                io.to(lobbyId).emit('gameCreated', {status: 'Success'});
+                callback({status: 'Failed', error: 'Create lobby failed, no player name'})
             }
+            console.log(`User: ${socket.id} created the lobby ${lobbyId}`);
+            lobbies[lobbyId] = {players: [], hostId: socket.id, items: [], currentTurnIndex: 0};
+            lobbies[lobbyId].players.push({id: socket.id, name: playerName});
+            socket.join(lobbyId);
+            callback({status: 'Success'})
+            return
         })
 
-        socket.on('join-lobby', (lobbyId, callback) => {
-            if (lobbies[lobbyId]) {
-                socket.join(lobbyId);
-                lobbies[lobbyId].users.push(userId);
-                callback({
-                    success: true,
-                    messages: lobbies[lobbyId].messages,
-                    userId,
-                    currentTurn:
-                        lobbies[lobbyId].users[
-                            lobbies[lobbyId].currentTurnIndex
-                        ],
-                });
-            } else {
-                callback({ success: false, error: 'Lobby not found' });
+        socket.on('joinLobby', ({lobbyId, playerName}, callback) => {
+            if(!lobbies[lobbyId])
+            {
+                callback({status: 'Failed', error: 'Failed to join lobby, lobby not found'})
+                return;
             }
+            if(!playerName)
+            {
+                callback({status: 'Failed', error: 'Failed to join lobby, no player name'})
+                return;
+            }
+
+            lobbies[lobbyId].players.push({id: socket.id, name: playerName});
+            socket.join(lobbyId);
+            callback({ status: 'Success' });
+            return;
         });
 
         socket.on('post-message', ({ lobbyId, userId, message }, callback) => {

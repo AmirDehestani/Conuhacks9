@@ -1,35 +1,58 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client'
 
 const socket = io('http://localhost:5000');
 
+//import { createLobby, joinLobby } from '../services/lobbyServices';
+
 function Test() {
     const [playerName, setPlayerName] = useState('');
+    const [lobbyCode, setLobbyCode] = useState('');
+    const navigate = useNavigate();
 
-  function createGame() {
-    if (!playerName.trim()) {
-      alert("Please enter your name before creating a lobby.");
-      return;
+    function createLobby() {
+        socket.emit('createLobby', playerName.trim(), (response) => {
+            if (response.status === 'Success') {
+                console.log(`Lobby created by: ${playerName}`);
+                navigate('/lobby')
+            }
+            console.log(response.error);
+        });
     }
 
-    socket.emit('createLobby', { name: playerName });
-    console.log(`Lobby created by: ${playerName}`);
-  }
+    function joinLobby() {    
+        socket.emit('joinLobby', {lobbyId: lobbyCode, playerName: playerName.trim()}, (response) => {
+            if (response.status === 'Success') {
+                console.log(`Lobby join by: ${playerName}`);
+                navigate('/lobby')
+            }
+            console.log(response.error);
+        });
+      }
 
   return (
     <div>
-      <h1>Test Page</h1>
-      
-      <input 
-        type="text" 
-        placeholder="Enter your name" 
-        value={playerName} 
-        onChange={(e) => setPlayerName(e.target.value)}
-      />
-      
-      <button onClick={createGame}>
-        Create Game
-      </button>
+        <h1>Test Page</h1>
+        <input 
+            type="text" 
+            placeholder="Enter your name" 
+            value={playerName} 
+            onChange={(e) => setPlayerName(e.target.value)}
+        />
+        <button onClick={createLobby}>
+            Create Lobby
+        </button>
+        <hr />
+        <input 
+            type="text" 
+            placeholder="Enter lobby code" 
+            value={lobbyCode} 
+            onChange={(e) => setLobbyCode(e.target.value)}
+        />
+        <button onClick={joinLobby}>
+            Join Lobby
+        </button>
     </div>
   )
 }
