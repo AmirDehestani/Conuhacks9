@@ -4,6 +4,7 @@ import Home from './components/Home';
 import NavBar from './components/NavBar';
 import Footer from './components/footer';
 import LobbySetup from './components/LobbySetup';
+import HowToPlay from './components/HowToPlay';
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
           <NavBar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/howtoplay" element={<div>How to play</div>} />
+            <Route path="/howtoplay" element={<HowToPlay/>} />
             <Route path="/lobby-setup" element={<LobbySetup />} />
             <Route path="/lobby" element={<div>Lobby Page</div>} />
           </Routes>
