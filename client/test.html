@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Lobby</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            margin-top: 10px;
+            display: block;
+            font-size: 14px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .lobby-code {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Create Game Lobby</h1>
+        
+        <!-- Form to collect user info -->
+        <label for="username">Enter your name:</label>
+        <input type="text" id="username" placeholder="Your Name" required>
+
+        <label for="numPlayers">Number of players:</label>
+        <input type="number" id="numPlayers" placeholder="Number of Players" min="2" required>
+
+        <label for="timeLimit">Time per player (seconds):</label>
+        <input type="number" id="timeLimit" placeholder="Time in seconds" min="5" required>
+
+        <button onclick="generateLobbyCode()">Generate Lobby Code</button>
+
+        <!-- Display lobby code -->
+        <div id="lobbyCodeContainer" class="lobby-code" style="display:none;">
+            <p>Your lobby code: <span id="lobbyCode"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // Function to generate a random lobby code
+        function generateLobbyCode() {
+            var username = document.getElementById('username').value;
+            var numPlayers = document.getElementById('numPlayers').value;
+            var timeLimit = document.getElementById('timeLimit').value;
+
+            // Ensure all fields are filled
+            if (username && numPlayers && timeLimit) {
+                var lobbyCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+                // Display the lobby code
+                document.getElementById('lobbyCode').textContent = lobbyCode;
+                document.getElementById('lobbyCodeContainer').style.display = 'block';
+            } else {
+                alert('Please fill out all fields before generating the lobby code.');
+            }
+        }
+    </script>
+
+</body>
+</html>

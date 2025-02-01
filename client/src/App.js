@@ -4,6 +4,8 @@ import Home from './components/Home';
 import NavBar from './components/NavBar';
 import Footer from './components/footer';
 import LobbySetup from './components/LobbySetup';
+import HowToPlay from './components/HowToPlay';
+import Lobby from './components/Lobby';
 import Test from './components/Test';
 import Lobby from './components/Lobby';
 import Game from './components/Game';
@@ -16,11 +18,9 @@ function App() {
           <NavBar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/howtoplay" element={<div>How to play</div>} />
+            <Route path="/howtoplay" element={<HowToPlay/>} />
             <Route path="/lobby-setup" element={<LobbySetup />} />
-            <Route path="/lobby" element={<Lobby />} />
-            <Route path="/test" element={<Test />} />
-            <Route path="/game" element={<Game />} />
+            <Route path="/lobby" element={<div>Lobby Page</div>} />
           </Routes>
         </div>
         <Footer />
