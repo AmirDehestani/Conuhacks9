@@ -7,12 +7,25 @@ export const setupSocket = (server) => {
     const io = new Server(server, {
         cors: {
             origin: '*',
+            methods: ['GET', 'POST']
         },
     });
 
     io.on('connection', (socket) => {
-        const userId = nanoid(8);
-        console.log(`User connected: ${userId}`);
+        console.log(`User connected: ${socket.id}`);
+
+        // Create a lobby
+        socket.on('createLobby', (playerName) => {
+            const lobbyId = nanoid(8);
+            console.log(`User: ${socket.id} created the lobby ${lobbyId}`);
+            if(playerName)
+            {
+                lobbies[lobbyId] = {players: [], hostId: socket.id, items: [], currentTurnIndex: 0};
+                lobbies[lobbyId].players.push({id: socket.id, name: playerName});
+                socket.join(lobbyId);
+                io.to(lobbyId).emit('gameCreated', {status: 'Success'});
+            }
+        })
 
         socket.on('join-lobby', (lobbyId, callback) => {
             if (lobbies[lobbyId]) {
@@ -78,7 +91,7 @@ export const setupSocket = (server) => {
         });
 
         socket.on('disconnect', () => {
-            console.log(`User disconnected: ${userId}`);
+            console.log(`User disconnected: ${socket.id}`);
         });
     });
 };
