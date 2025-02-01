@@ -1,12 +1,11 @@
-const express = require('express');
-const app = express();
-const port = 5000;
+import app from './app.js';
+import http from 'http';
+import config from './utils/config.js';
+import { setupSocket } from './socket.js';
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+const server = http.createServer(app);
+setupSocket(server);
+
+server.listen(config.PORT, () => {
+    console.log(`Server is running at http://localhost:${config.PORT}`);
 });
-
-app.listen(port, () => {    
-  console.log(`Server is running at http://localhost:${port}`);
-});
-

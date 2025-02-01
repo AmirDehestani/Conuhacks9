@@ -3,8 +3,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const config = {
-    port: process.env.PORT || 3000,
-    
+    PORT: process.env.PORT || 5000,
+    OPENAI_KEY: process.env.OPENAI_KEY,
 };
 
 export default config;
