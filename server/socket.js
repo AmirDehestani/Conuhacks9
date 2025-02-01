@@ -35,7 +35,7 @@ export const setupSocket = (server) => {
             lobbies[lobbyId].players.push({ id: socket.id, name: playerName });
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
-            callback({ status: 'Success' });
+            callback({ status: 'Success', lobbyCode: lobbyId });
             return;
         });
 

@@ -6,6 +6,7 @@ import Footer from './components/footer';
 import LobbySetup from './components/LobbySetup';
 import Test from './components/Test';
 import Lobby from './components/Lobby';
+import Game from './components/Game';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/lobby-setup" element={<LobbySetup />} />
             <Route path="/lobby" element={<Lobby />} />
             <Route path="/test" element={<Test />} />
+            <Route path="/game" element={<Game />} />
           </Routes>
         </div>
         <Footer />

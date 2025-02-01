@@ -5,6 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 export const socket = io('http://localhost:5000');
 
+let lobbyCode = "";
+
 function LobbySetup() {
     const [activeSection, setActiveSection] = useState('createLobby');
     const [playerName, setPlayerName] = useState('');

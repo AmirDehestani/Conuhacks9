@@ -13,6 +13,8 @@ function Lobby() {
         <div>
             <h1>Lobby Page</h1>
             <button onClick={leaveLobby}>Leave Lobby</button>
+            <hr />
+            <button onClick={() => navigate('/game')}>Start game</button>
         </div>
     );
 }
