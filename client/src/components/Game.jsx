@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import ObjectHistoryItem from './ObjectHistoryItem';
 import PlayerItem from './PlayerItem';
@@ -8,7 +8,6 @@ import { LobbyContext } from '../contexts/LobbyContext.js';
 function Game() {
     const location = useLocation();
     const gameData = location.state.gameData.data;
-    console.log('Game Data:', gameData);
     const [usersList, setUsersList] = useState(gameData.players);
     const [objectsHistory, setObjectsHistory] = useState(
         gameData.game.previousMoves
@@ -19,18 +18,19 @@ function Game() {
     const [currentUser, setCurrentUser] = useState({ id: 1, name: 'Player_1' });
     const [previousObject, setPreviousObject] = useState(objectsHistory[0]);
     const [currentObject, setCurrentObject] = useState('????');
+    const [reasoning, setReasoning] = useState('');
+    const [roundInProgress, setRoundInProgress] = useState(true);
 
     const [item, setItem] = useState('');
     const { lobbyCode } = useContext(LobbyContext);
 
     function playerMove() {
+        // IMPORTANT TODO: don't allow sending multiple requests
         socket.emit('playerMove', { lobbyCode, item });
     }
 
-    function SendAnswer() {
-        const input = document.getElementById('inputAnswer');
-        setCurrentObject(input.value);
-        input.value = '';
+    function nextRound() {
+        socket.emit('nextRound', lobbyCode);
     }
 
     function userIconSVG() {
@@ -58,6 +58,26 @@ function Game() {
         );
     }
 
+    useEffect(() => {
+        socket.on('updateGame', (res) => {
+            const data = res.data;
+            console.log('Updated Data:', data);
+            setObjectsHistory(data.game.previousMoves);
+            setPlayerTurn(data.game.alivePlayers[data.game.currentTurnIndex]);
+            setPreviousObject(data.game.previousMoves.slice(-2)[0]);
+            setCurrentObject(data.game.previousMoves.slice(-1)[0]);
+            setReasoning(data.game.reasoning);
+            setRoundInProgress(true);
+        });
+
+        socket.on('roundFinished', (res) => {
+            const { roundItem, roundWinner, roundMessage } = res;
+            setReasoning(roundMessage);
+            setCurrentObject(roundItem);
+            setRoundInProgress(false);
+        });
+    }, []);
+
     return (
         <div className="flex justify-center">
             <div className="flex flex-col gap-5">
@@ -74,7 +94,6 @@ function Game() {
                         </div>
                     </div>
                 </div>
-
                 {/* MIDDLE SECTION */}
                 <div className="flex justify-center">
                     <div className="flex flex-row gap-3">
@@ -119,10 +138,7 @@ function Game() {
                                 </div>
                             </div>
                             <div className="text-white text-center text-[15px]">
-                                is simply dummy text of the printing and
-                                typesetting industry. Lorem Ipsum has been the
-                                industry's standard dummy text ever since the
-                                1500s, when an unknown printer took a galley.
+                                {reasoning}
                             </div>
                         </div>
                         <div className="w-[250px] h-[312px] bg-[rgba(255,255,255,0.25)] rounded-[3px] p-4">
@@ -145,31 +161,50 @@ function Game() {
                         </div>
                     </div>
                 </div>
-
                 {/* BOTTOM SECTION */}
-                {playerTurn.id === socket.id && (
-                    <div className="flex justify-center">
-                        <div className="flex flex-row gap-5 cherrybomb">
-                            <div>
-                                <input
-                                    id="inputAnswer"
-                                    type="text"
-                                    className="text-[25px] rounded-[3px] px-2 border-2 border-white bg-[rgba(255,255,255,0.25)] text-white w-[250px]"
-                                />
-                            </div>
-                            <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
-                                <div
-                                    onClick={() => {
-                                        SendAnswer();
-                                    }}
-                                    className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
-                                >
-                                    SEND
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                {roundInProgress
+                    ? playerTurn.id === socket.id && (
+                          <div className="flex justify-center">
+                              <div className="flex flex-row gap-5 cherrybomb">
+                                  <div>
+                                      <input
+                                          id="inputAnswer"
+                                          type="text"
+                                          className="text-[25px] rounded-[3px] px-2 border-2 border-white bg-[rgba(255,255,255,0.25)] text-white w-[250px]"
+                                          onChange={(e) =>
+                                              setItem(e.target.value)
+                                          }
+                                      />
+                                  </div>
+                                  <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
+                                      <div
+                                          onClick={() => {
+                                              playerMove();
+                                          }}
+                                          className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
+                                      >
+                                          SEND
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      )
+                    : playerTurn.id === socket.id && (
+                          <div className="flex justify-center">
+                              <div className="flex flex-row gap-5 cherrybomb">
+                                  <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
+                                      <div
+                                          onClick={() => {
+                                              nextRound();
+                                          }}
+                                          className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
+                                      >
+                                          NEXT ROUND
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      )}
             </div>
         </div>
     );

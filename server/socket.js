@@ -89,6 +89,7 @@ export const setupSocket = (server) => {
                 alivePlayers: lobbies[lobbyCode].players, // List of player IDs still in the game
                 currentTurnIndex: 0, // Start with the first player
                 previousMoves: ['Rock'], // First move is always "Rock"
+                reasoning: '', // Reasoning for each move
             };
 
             // Notify all players that the game has started
@@ -98,48 +99,78 @@ export const setupSocket = (server) => {
         });
 
         socket.on('playerMove', async ({ lobbyCode, item }) => {
-            console.log('item is:', item);
-            console.log(
-                'previous item is:',
-                lobbies[lobbyCode].game.previousMove
-            );
-            if (!lobbies[lobbyCode]) return;
+            if (!item) return;
+            const previousMoves = lobbies[lobbyCode].game.previousMoves;
+            if (previousMoves.includes(item)) return;
 
-            const game = lobbies[lobbyCode].game;
-            const playerID = game.players[game.currentTurnIndex];
-
-            // Ensure only the current player can submit a move
-            if (socket.id !== playerID) {
-                //  return;
+            if (!lobbies[lobbyCode]) {
+                console.error('Lobby not found');
+                return;
+            }
+            if (!lobbies[lobbyCode].game) {
+                console.error('Game not found');
+                return;
             }
 
-            const playerName = lobbies[lobbyCode].players[playerID].name; // Get name
+            const game = lobbies[lobbyCode].game;
+            const playerID = socket.id;
 
-            // Add move to game log
-            //const logMessage = `Player ${playerName} played ${move}`;
-            //io.to(lobbyCode).emit("updateGameLog", logMessage);
+            const currentTurn = game.alivePlayers[game.currentTurnIndex];
+            if (playerID !== currentTurn.id) {
+                console.error('Not your turn');
+                return;
+            }
+
             try {
-                const result = await getGameResult(game.previousMove, item);
+                const result = await getGameResult(
+                    game.previousMoves.slice(-1)[0],
+                    item
+                );
                 console.log('Game Result:', result);
 
                 // Move to the next player
-                game.previousMove = item;
+                game.previousMoves.push(item);
                 game.currentTurnIndex =
-                    (game.currentTurnIndex + 1) % game.players.length;
-                const nextPlayerID = game.players[game.currentTurnIndex];
-                const nextPlayerName =
-                    lobbies[lobbyCode].players[nextPlayerID].name;
+                    (game.currentTurnIndex + 1) % game.alivePlayers.length;
+                const nextPlayer = game.alivePlayers[game.currentTurnIndex];
+                game.reasoning = result.reason;
 
-                console.log(`Next turn: ${nextPlayerName}`);
+                console.log(`Next turn: ${nextPlayer}`);
 
                 // Notify all players whose turn it is
-                io.to(lobbyCode).emit('updateGame', {
-                    currentTurn: nextPlayerName,
-                    result, // Optionally send the result to players
+                io.to(lobbyCode).emit('roundFinished', {
+                    roundItem: item,
+                    roundWinner: result.winner,
+                    roundMessage: result.reason,
                 });
             } catch (e) {
                 console.error('error getting res');
             }
+        });
+
+        socket.on('nextRound', (lobbyCode) => {
+            if (!lobbies[lobbyCode]) {
+                console.error('Lobby not found');
+                return;
+            }
+            if (!lobbies[lobbyCode].game) {
+                console.error('Game not found');
+                return;
+            }
+
+            if (
+                lobbies[lobbyCode].players.filter(
+                    (player) => player.id === socket.id
+                ).length === 0
+            ) {
+                console.error('Player not in lobby');
+                return;
+            }
+
+            // Notify all players that the next round has started
+            io.to(lobbyCode).emit('updateGame', {
+                data: lobbies[lobbyCode],
+            });
         });
 
         socket.on('post-message', ({ lobbyId, userId, message }, callback) => {
