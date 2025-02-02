@@ -17,11 +17,11 @@ function Home() {
                         What Beats Rock Games ?
                     </div>
                     <div className="cherrybomb text-white opacity-50 text-[15px]">
-                        is simply dummy text of the printing and typesetting
-                        industry. Lorem Ipsum has been the industry's standard
-                        dummy text ever since the 1500s, when an unknown printer
-                        took a galley of type and scrambled it to make a type
-                        specimen book. It has survived not only five.
+                      Welcome to "Rocks Beat What?" – a fast-paced game where each player takes 
+                      turns choosing an object that beats the previous one. Starting with Rock, 
+                      the sequence grows with each round, but you can't repeat objects. 
+                      If you run out of time or choose incorrectly, you're out. 
+                      The last player standing wins!
                     </div>
 
                     <a

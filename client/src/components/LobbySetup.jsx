@@ -54,10 +54,10 @@ function LobbySetup() {
                 <div className="w-[450px] h-[280px] cherrybomb text-white flex flex-col gap-5">
                     <div className="text-[50px]">Lobby Setup</div>
                     <div className="opacity-75 text-[15.5px]">
-                        is simply dummy text of the printing and typesetting
-                        industry. Lorem Ipsum has been the industry's standard
-                        dummy text ever since the 1500s, when an unknown printer
-                        took a galley.
+                        This is the page to join or create a lobby. 
+                        You can create a lobby to start a new game and invite others to join, 
+                        or you can join a lobby by entering a lobby code and jumping into the 
+                        game with other players.
                     </div>
                     <div className="flex flex-row gap-10">
                         <button
