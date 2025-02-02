@@ -4,8 +4,11 @@ import ObjectHistoryItem from './ObjectHistoryItem';
 import PlayerItem from './PlayerItem';
 import { socket } from './LobbySetup';
 import { LobbyContext } from '../contexts/LobbyContext.js';
+import Winner from './Winner.jsx';
 
 function Game() {
+    const user = {id: 1, name: 'Player_1'};
+    const [winner,setWinner] = useState(null);
     const location = useLocation();
     const gameData = location.state.gameData.data;
     const [usersList, setUsersList] = useState(gameData.players);
@@ -81,6 +84,12 @@ function Game() {
             const { alivePlayers } = res;
             setUsersList(alivePlayers);
         });
+
+        socket.on('gameEnded', (res) => {
+            const { winner } = res;
+            setWinner(winner);
+        });
+        
     }, []);
 
     return (
@@ -126,26 +135,36 @@ function Game() {
                                 </div>
                             </div>
                         </div>
+
                         <div className="w-[450px] h-[312px] bg-[rgba(255,255,255,0.25)] rounded-[3px] p-4 flex flex-col gap-5">
                             <div className="cherrybomb text-white underline">
                                 Game Arena
                             </div>
-                            <div className="flex flex-row gap-5 justify-center cherrybomb text-white items-center mt-5">
-                                <div className="text-[35px]">
-                                    {previousObject}
+                            {winner == null ? 
+                                <>
+                                    <div className="flex flex-row gap-5 justify-center cherrybomb text-white items-center mt-5">
+                                        <div className="text-[35px]">
+                                            {previousObject}
+                                        </div>
+                                        <div className="bg-[rgba(0,0,0,0)] border-[5px] border-white w-[75px] h-[75px] rounded-full shadow-md flex justify-center items-center">
+                                            <span className="text-[25px]">VS</span>
+                                        </div>
+                                        {/* use  animate-bounce to make the text bounce*/}
+                                        <div className="text-[35px]">
+                                            {currentObject}
+                                        </div>
+                                    </div>
+                                    <div className="text-white text-center text-[15px]">
+                                        {reasoning}
+                                    </div> 
+                                </> : 
+                                
+                                <div className='flex justify-center h-[210px] items-center'>
+                                    <Winner user={winner} />
                                 </div>
-                                <div className="bg-[rgba(0,0,0,0)] border-[5px] border-white w-[75px] h-[75px] rounded-full shadow-md flex justify-center items-center">
-                                    <span className="text-[25px]">VS</span>
-                                </div>
-                                {/* use  animate-bounce to make the text bounce*/}
-                                <div className="text-[35px]">
-                                    {currentObject}
-                                </div>
-                            </div>
-                            <div className="text-white text-center text-[15px]">
-                                {reasoning}
-                            </div>
+                            }
                         </div>
+
                         <div className="w-[250px] h-[312px] bg-[rgba(255,255,255,0.25)] rounded-[3px] p-4">
                             <div className="cherrybomb text-white underline">
                                 Object's History
@@ -166,50 +185,60 @@ function Game() {
                         </div>
                     </div>
                 </div>
+                
+                
                 {/* BOTTOM SECTION */}
-                {roundInProgress
-                    ? playerTurn.id === socket.id && (
-                          <div className="flex justify-center">
-                              <div className="flex flex-row gap-5 cherrybomb">
-                                  <div>
-                                      <input
-                                          id="inputAnswer"
-                                          type="text"
-                                          className="text-[25px] rounded-[3px] px-2 border-2 border-white bg-[rgba(255,255,255,0.25)] text-white w-[250px]"
-                                          onChange={(e) =>
-                                              setItem(e.target.value)
-                                          }
-                                      />
-                                  </div>
-                                  <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
-                                      <div
-                                          onClick={() => {
-                                              playerMove();
-                                          }}
-                                          className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
-                                      >
-                                          SEND
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      )
-                    : playerTurn.id === socket.id && (
-                          <div className="flex justify-center">
-                              <div className="flex flex-row gap-5 cherrybomb">
-                                  <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
-                                      <div
-                                          onClick={() => {
-                                              nextRound();
-                                          }}
-                                          className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
-                                      >
-                                          NEXT ROUND
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                      )}
+
+                {winner == null ? 
+
+                    <div>
+                        {roundInProgress
+                            ? playerTurn.id === socket.id && (
+                                <div className="flex justify-center">
+                                    <div className="flex flex-row gap-5 cherrybomb">
+                                        <div>
+                                            <input
+                                                id="inputAnswer"
+                                                type="text"
+                                                className="text-[25px] rounded-[3px] px-2 border-2 border-white bg-[rgba(255,255,255,0.25)] text-white w-[250px]"
+                                                onChange={(e) =>
+                                                    setItem(e.target.value)
+                                                }
+                                            />
+                                        </div>
+                                        <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
+                                            <div
+                                                onClick={() => {
+                                                    playerMove();
+                                                }}
+                                                className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
+                                            >
+                                                SEND
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                            : playerTurn.id === socket.id && (
+                                <div className="flex justify-center">
+                                    <div className="flex flex-row gap-5 cherrybomb">
+                                        <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
+                                            <div
+                                                onClick={() => {
+                                                    nextRound();
+                                                }}
+                                                className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
+                                            >
+                                                NEXT ROUND
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                    </div> : <></> 
+                }
+
+                
             </div>
         </div>
     );
