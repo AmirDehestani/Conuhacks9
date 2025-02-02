@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { LobbyContext } from '../contexts/LobbyContext.js';
 import { UsersContext } from '../contexts/UsersContext.js';
 
-export const socket = io('http://localhost:5000');
+export const socket = io('http://25.46.70.149:5000');
 
 function LobbySetup() {
     const [activeSection, setActiveSection] = useState('createLobby');

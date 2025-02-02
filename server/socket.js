@@ -152,7 +152,7 @@ export const setupSocket = (server) => {
                     if (game.alivePlayers.length === 1) {
                         // Game over
                         io.to(lobbyCode).emit('gameEnded', {
-                            winner: game.alivePlayers[0].name,
+                            winner: game.alivePlayers[0],
                         });
                         return;
                     }
