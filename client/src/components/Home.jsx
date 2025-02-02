@@ -17,7 +17,7 @@ function Home() {
                         What Beats Rock Games ?
                     </div>
                     <div className="cherrybomb text-white opacity-50 text-[15px]">
-                      Welcome to "Rocks Beat What?" – a fast-paced game where each player takes 
+                      Welcome to "What beats Rock?" – a fast-paced game where each player takes 
                       turns choosing an object that beats the previous one. Starting with Rock, 
                       the sequence grows with each round, but you can't repeat objects. 
                       If you run out of time or choose incorrectly, you're out. 
