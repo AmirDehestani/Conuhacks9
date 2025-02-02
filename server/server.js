@@ -4,6 +4,7 @@ import config from './utils/config.js';
 import { setupSocket } from './socket.js';
 
 const server = http.createServer(app);
+
 setupSocket(server);
 
 server.listen(config.PORT, () => {

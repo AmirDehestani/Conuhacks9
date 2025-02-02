@@ -14,10 +14,8 @@ const Output = z.object({
 export const getGameResult = async (item1, item2) => {
     const prompt = `
         You are a judge in an unlimited rock-paper-scissors game where players choose any object.
-        Your task is to decide which object wins based on creative logic, provide a reason for who wins, and generate an image prompt of the winner defeating the loser.
-        The reason should be short and light hearted.
-        The image prompt should represent the reasoning that you provided, and make it clear that who is the winner.
-        This round: ${item1.message} vs ${item2.message}.`;
+        Your task is to decide which object wins based on creative logic, provide a reason for who wins, keep it a small amount of number like a sentence or 2.
+        This round: ${item1} vs ${item2}.`;
 
     try {
         // Request the winner, reason, and image prompt
