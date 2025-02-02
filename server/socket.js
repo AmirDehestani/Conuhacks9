@@ -32,7 +32,11 @@ export const setupSocket = (server) => {
                 items: [],
                 currentTurnIndex: 0,
             };
-            lobbies[lobbyId].players.push({ id: socket.id, name: playerName });
+            lobbies[lobbyId].players.push({
+                id: socket.id,
+                name: playerName,
+                isAlive: true,
+            });
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
             io.to(lobbyId).emit(
@@ -63,7 +67,11 @@ export const setupSocket = (server) => {
                 return;
             }
 
-            lobbies[lobbyId].players.push({ id: socket.id, name: playerName });
+            lobbies[lobbyId].players.push({
+                id: socket.id,
+                name: playerName,
+                isAlive: true,
+            });
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
             callback({ status: 'Success', players: lobbies[lobbyId].players });
@@ -129,7 +137,6 @@ export const setupSocket = (server) => {
                 console.log('Game Result:', result);
 
                 // Move to the next player
-                game.previousMoves.push(item);
                 game.currentTurnIndex =
                     (game.currentTurnIndex + 1) % game.alivePlayers.length;
                 const nextPlayer = game.alivePlayers[game.currentTurnIndex];
@@ -141,9 +148,26 @@ export const setupSocket = (server) => {
                     game.alivePlayers = game.alivePlayers.filter(
                         (player) => player.id !== playerID
                     );
+
+                    if (game.alivePlayers.length === 1) {
+                        // Game over
+                        io.to(lobbyCode).emit('gameEnded', {
+                            winner: game.alivePlayers[0].name,
+                        });
+                        return;
+                    }
+
+                    const player = lobbies[lobbyCode].players.find(
+                        (player) => player.id === playerID
+                    );
+                    if (player) {
+                        player.isAlive = false;
+                    }
                     io.to(lobbyCode).emit('playerEliminated', {
-                        alivePlayers: game.alivePlayers,
+                        alivePlayers: lobbies[lobbyCode].players,
                     });
+                } else {
+                    game.previousMoves.push(item);
                 }
 
                 // Notify all players whose turn it is
