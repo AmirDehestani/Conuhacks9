@@ -137,6 +137,15 @@ export const setupSocket = (server) => {
 
                 console.log(`Next turn: ${nextPlayer}`);
 
+                if (result.winner != item) {
+                    game.alivePlayers = game.alivePlayers.filter(
+                        (player) => player.id !== playerID
+                    );
+                    io.to(lobbyCode).emit('playerEliminated', {
+                        alivePlayers: game.alivePlayers,
+                    });
+                }
+
                 // Notify all players whose turn it is
                 io.to(lobbyCode).emit('roundFinished', {
                     roundItem: item,

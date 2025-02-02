@@ -64,9 +64,9 @@ function Game() {
             console.log('Updated Data:', data);
             setObjectsHistory(data.game.previousMoves);
             setPlayerTurn(data.game.alivePlayers[data.game.currentTurnIndex]);
-            setPreviousObject(data.game.previousMoves.slice(-2)[0]);
-            setCurrentObject(data.game.previousMoves.slice(-1)[0]);
-            setReasoning(data.game.reasoning);
+            setPreviousObject(data.game.previousMoves.slice(-1)[0]);
+            setCurrentObject('????');
+            setReasoning('');
             setRoundInProgress(true);
         });
 
@@ -75,6 +75,11 @@ function Game() {
             setReasoning(roundMessage);
             setCurrentObject(roundItem);
             setRoundInProgress(false);
+        });
+
+        socket.on('playerEliminated', (res) => {
+            const { alivePlayers } = res;
+            setUsersList(alivePlayers);
         });
     }, []);
 
