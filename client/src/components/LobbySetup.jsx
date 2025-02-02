@@ -27,7 +27,7 @@ function LobbySetup() {
                 console.log(`Lobby created by: ${playerName}`);
                 setLobbyCode(response.lobbyCode);
                 setUsersList(response.players);
-                navigate('/lobby');
+                navigate('/lobby', { state: { isHost: true } });
             }
             console.log(response.error);
         });
