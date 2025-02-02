@@ -1,18 +1,23 @@
 import React, { useState, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 import ObjectHistoryItem from './ObjectHistoryItem';
 import PlayerItem from './PlayerItem';
 import { socket } from './LobbySetup';
 import { LobbyContext } from '../contexts/LobbyContext.js';
 
 function Game() {
-    const objectItem = { id: 1, objectName: 'Rock' };
-    const playerItem = { id: 1, name: 'Player_1' };
-
-    const [usersList, setUsersList] = useState([playerItem]);
-    const [objectsHistory, setObjectsHistory] = useState([objectItem]);
-    const [playerTurn, setPlayerTurn] = useState('Player_1');
+    const location = useLocation();
+    const gameData = location.state.gameData.data;
+    console.log('Game Data:', gameData);
+    const [usersList, setUsersList] = useState(gameData.players);
+    const [objectsHistory, setObjectsHistory] = useState(
+        gameData.game.previousMoves
+    );
+    const [playerTurn, setPlayerTurn] = useState(
+        gameData.game.alivePlayers[gameData.game.currentTurnIndex]
+    );
     const [currentUser, setCurrentUser] = useState({ id: 1, name: 'Player_1' });
-    const [previousObject, setPreviousObject] = useState('Rock');
+    const [previousObject, setPreviousObject] = useState(objectsHistory[0]);
     const [currentObject, setCurrentObject] = useState('????');
 
     const [item, setItem] = useState('');
@@ -93,7 +98,7 @@ function Game() {
                                     Player Turn
                                 </div>
                                 <div className="cherrybomb text-white text-[30px] mt-5">
-                                    {playerTurn}
+                                    {playerTurn.name}
                                 </div>
                             </div>
                         </div>
@@ -126,10 +131,11 @@ function Game() {
                             </div>
                             <div className="flex flex-col gap-1 mt-2 pr-1 h-[245px] overflow-y-auto ">
                                 {objectsHistory.length !== 0 ? (
-                                    objectsHistory.map((object) => (
+                                    objectsHistory.map((object, index) => (
                                         <ObjectHistoryItem
-                                            key={object.id}
+                                            key={index}
                                             object={object}
+                                            index={index + 1}
                                         />
                                     ))
                                 ) : (
@@ -141,53 +147,32 @@ function Game() {
                 </div>
 
                 {/* BOTTOM SECTION */}
-                <div className="flex justify-center">
-                    <div className="flex flex-row gap-5 cherrybomb">
-                        <div>
-                            <input
-                                id="inputAnswer"
-                                type="text"
-                                className="text-[25px] rounded-[3px] px-2 border-2 border-white bg-[rgba(255,255,255,0.25)] text-white w-[250px]"
-                            />
-                        </div>
-                        <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
-                            <div
-                                onClick={() => {
-                                    SendAnswer();
-                                }}
-                                className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
-                            >
-                                SEND
+                {playerTurn.id === socket.id && (
+                    <div className="flex justify-center">
+                        <div className="flex flex-row gap-5 cherrybomb">
+                            <div>
+                                <input
+                                    id="inputAnswer"
+                                    type="text"
+                                    className="text-[25px] rounded-[3px] px-2 border-2 border-white bg-[rgba(255,255,255,0.25)] text-white w-[250px]"
+                                />
+                            </div>
+                            <div className="bg-white rounded-[3px] hover:scale-[105%] cursor-pointer ease-in-out duration-300 shadow-md">
+                                <div
+                                    onClick={() => {
+                                        SendAnswer();
+                                    }}
+                                    className="py-2 px-5 rounded-[3px] text-transparent bg-clip-text bg-gradient-to-r from-[#7D00C6] to-[#DF00A4]"
+                                >
+                                    SEND
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
             </div>
         </div>
     );
 }
-
-// function Game() {
-//     const [item, setItem] = useState('');
-//     const { lobbyCode } = useContext(LobbyContext);
-
-//     function playerMove()
-//     {
-//         socket.emit('playerMove', {lobbyCode, item});
-//     }
-
-//   return (
-//     <div>
-//         <h1>Game Page</h1>
-//         <input
-//             type="text"
-//             placeholder="Enter move"
-//             value={item}
-//             onChange={(e) => setItem(e.target.value)}
-//         />
-//         <button onClick={() => playerMove()}>Submit move</button>
-//     </div>
-//   )
-// }
 
 export default Game;

@@ -84,28 +84,17 @@ export const setupSocket = (server) => {
                 return;
             }
 
-            const playerIDs = Object.keys(lobbies[lobbyCode].players);
-
             // Initialize game state
             lobbies[lobbyCode].game = {
-                players: playerIDs, // Ordered list of player IDs
+                alivePlayers: lobbies[lobbyCode].players, // List of player IDs still in the game
                 currentTurnIndex: 0, // Start with the first player
-                previousMove: 'Rock', // First move is always "Rock"
+                previousMoves: ['Rock'], // First move is always "Rock"
             };
-
-            const firstPlayerID = playerIDs[0];
-            const firstPlayerName =
-                lobbies[lobbyCode].players[firstPlayerID].name; // Get name
 
             // Notify all players that the game has started
             io.to(lobbyCode).emit('gameStarted', {
-                lobbyCode,
-                currentTurn: firstPlayerName, // Send the actual name instead of socket ID
+                data: lobbies[lobbyCode],
             });
-
-            console.log(
-                `Game started in lobby ${lobbyCode}. First turn: ${firstPlayerName}`
-            );
         });
 
         socket.on('playerMove', async ({ lobbyCode, item }) => {

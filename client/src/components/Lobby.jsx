@@ -1,11 +1,9 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import UserCard from './UserCard';
 import { LobbyContext } from '../contexts/LobbyContext.js';
 import { UsersContext } from '../contexts/UsersContext.js';
 import { socket } from './LobbySetup.jsx';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-let currentPlayerName = '';
 
 function Lobby() {
     const { usersList, setUsersList } = useContext(UsersContext);
@@ -29,9 +27,12 @@ function Lobby() {
             setUsersList(users);
         });
 
-        socket.on('gameStarted', () => {
-            console.log('supposed to nav');
-            navigate('/game');
+        socket.on('gameStarted', (data) => {
+            navigate('/game', {
+                state: {
+                    gameData: data,
+                },
+            });
         });
     }, []);
 
@@ -73,10 +74,10 @@ function Lobby() {
                                 />
                             </div>
 
-                            {isHost && (
+                            {isHost && usersList.length >= 2 && (
                                 <div className="mt-2">
                                     <button
-                                        onClick={() => startGame(lobbyCode)}
+                                        onClick={() => startGame()}
                                         className="cherrybomb text-white bg-[rgba(255,255,255,0.25)] px-5 py-1 rounded-[5px] shadow-md hover:scale-[105%] cursor-pointer ease-in-out duration-300"
                                     >
                                         Start Game
