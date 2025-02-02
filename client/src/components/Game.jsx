@@ -1,22 +1,16 @@
-/*
-data we need:
-all previous items (array)
-current item to beat
-all players
-players alive
-whos turn it is
+import React, { useState, useContext } from 'react';
+import {socket} from './LobbySetup'
+import { LobbyContext } from '../contexts/LobbyContext.js';
 
-TODO:
-handle playing/eliminated players
-disable input messages for all players except current one
-prompting openai
-*/
-
-import React, { useState } from 'react';
-import socket from './LobbySetup'
 
 function Game() {
     const [item, setItem] = useState('');
+    const { lobbyCode } = useContext(LobbyContext);
+
+    function playerMove()
+    {
+        socket.emit('playerMove', {lobbyCode, item});
+    }
 
   return (
     <div>
@@ -27,7 +21,7 @@ function Game() {
             value={item}
             onChange={(e) => setItem(e.target.value)}
         />
-        <button onClick={() => {console.log('move: ', item)}}>Submit move</button>
+        <button onClick={() => playerMove()}>Submit move</button>
     </div>
   )
 }

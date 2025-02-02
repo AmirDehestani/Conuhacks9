@@ -35,12 +35,12 @@ export const setupSocket = (server) => {
             lobbies[lobbyId].players.push({ id: socket.id, name: playerName });
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
+            io.to(lobbyId).emit('usersList', lobbies[lobbyId].players, lobbies[lobbyId].hostId); // For existing players to see the new player
             callback({
                 status: 'Success',
                 lobbyCode: lobbyId,
                 players: lobbies[lobbyId].players,
             });
-            io.to(lobbyId).emit('usersList', lobbies[lobbyId].players); // For existing players to see the new player
         });
 
         socket.on('joinLobby', ({ lobbyId, playerName }, callback) => {
@@ -63,22 +63,76 @@ export const setupSocket = (server) => {
             users[socket.id] = lobbyId; // Store the lobbyId for each user
             socket.join(lobbyId);
             callback({ status: 'Success', players: lobbies[lobbyId].players });
-            io.to(lobbyId).emit('usersList', lobbies[lobbyId].players); // For existing players to see the new player
+
+            io.to(lobbyId).emit('usersList', lobbies[lobbyId].players, lobbies[lobbyId].hostId); // For existing players to see the new player
         });
 
         socket.on('startGame', (lobbyCode) => {
-            if(!lobbies[lobbyCode])
-                return;
-            
-            console.log('startgame');
-            let currLobby = lobbies[lobbyCode];
-            currLobby.game = {
-                alivePlayers: currLobby.players,
-                currIndex: currLobby.currentTurnIndex,
-                previousItem: 'Rock'
-            }
+            if (!lobbies[lobbyCode]) return;
 
-            io.to(lobbyCode).emit('gameStarted');
+            const playerIDs = Object.keys(lobbies[lobbyCode].players);
+
+            // Initialize game state
+            lobbies[lobbyCode].game = {
+                players: playerIDs, // Ordered list of player IDs
+                currentTurnIndex: 0, // Start with the first player
+                previousMove: "Rock", // First move is always "Rock"
+            };
+
+            const firstPlayerID = playerIDs[0];
+            const firstPlayerName = lobbies[lobbyCode].players[firstPlayerID].name; // Get name
+
+            // Notify all players that the game has started
+            io.to(lobbyCode).emit("gameStarted", {
+                lobbyCode,
+                currentTurn: firstPlayerName, // Send the actual name instead of socket ID
+            });
+
+            console.log(`Game started in lobby ${lobbyCode}. First turn: ${firstPlayerName}`);
+        });
+
+        socket.on("playerMove", async ({ lobbyCode, item }) => {
+            console.log('item is:', item);
+            console.log('previous item is:', lobbies[lobbyCode].game.previousMove);
+            if (!lobbies[lobbyCode]) return;
+            
+            const game = lobbies[lobbyCode].game;
+            const playerID = game.players[game.currentTurnIndex];
+            
+            // Ensure only the current player can submit a move
+            if (socket.id !== playerID) {
+              //  return;
+            }
+    
+            const playerName = lobbies[lobbyCode].players[playerID].name; // Get name
+            
+            
+            // Add move to game log
+            //const logMessage = `Player ${playerName} played ${move}`;
+            //io.to(lobbyCode).emit("updateGameLog", logMessage);
+            try
+            {
+                const result = await getGameResult(game.previousMove, item);
+                console.log("Game Result:", result);
+
+                // Move to the next player
+                game.previousMove = item;
+                game.currentTurnIndex = (game.currentTurnIndex + 1) % game.players.length;
+                const nextPlayerID = game.players[game.currentTurnIndex];
+                const nextPlayerName = lobbies[lobbyCode].players[nextPlayerID].name;
+
+                console.log(`Next turn: ${nextPlayerName}`);
+
+                // Notify all players whose turn it is
+                io.to(lobbyCode).emit("updateGame", {
+                    currentTurn: nextPlayerName,
+                    result, // Optionally send the result to players
+                });
+
+            } catch(e)
+            {
+                console.error('error getting res');
+            }
         });
 
         socket.on('post-message', ({ lobbyId, userId, message }, callback) => {
