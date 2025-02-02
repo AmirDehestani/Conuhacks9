@@ -13,7 +13,7 @@ prompting openai
 */
 
 import React, { useState } from 'react';
-
+import socket from './LobbySetup'
 
 function Game() {
     const [item, setItem] = useState('');

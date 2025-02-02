@@ -1,18 +1,25 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import UserCard from './UserCard';
 import { LobbyContext } from '../contexts/LobbyContext.js';
 import { UsersContext } from '../contexts/UsersContext.js';
 import { socket } from './LobbySetup.jsx';
+import { useNavigate } from 'react-router-dom';
 
 function Lobby() {
     const { usersList, setUsersList } = useContext(UsersContext);
     const { lobbyCode } = useContext(LobbyContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         // fetch users list from server
         socket.on('usersList', (users) => {
             setUsersList(users);
         });
+
+        socket.on('gameStarted', () => {
+            console.log('supposed to nav');
+            navigate('/game');
+        })
     }, []);
 
     return (

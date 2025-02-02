@@ -66,6 +66,21 @@ export const setupSocket = (server) => {
             io.to(lobbyId).emit('usersList', lobbies[lobbyId].players); // For existing players to see the new player
         });
 
+        socket.on('startGame', (lobbyCode) => {
+            if(!lobbies[lobbyCode])
+                return;
+            
+            console.log('startgame');
+            let currLobby = lobbies[lobbyCode];
+            currLobby.game = {
+                alivePlayers: currLobby.players,
+                currIndex: currLobby.currentTurnIndex,
+                previousItem: 'Rock'
+            }
+
+            io.to(lobbyCode).emit('gameStarted');
+        });
+
         socket.on('post-message', ({ lobbyId, userId, message }, callback) => {
             const lobby = lobbies[lobbyId];
             if (!lobby) {
