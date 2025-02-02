@@ -13,9 +13,26 @@ const Output = z.object({
 
 export const getGameResult = async (item1, item2) => {
     const prompt = `
-        You are a judge in an unlimited rock-paper-scissors game where players choose any object.
-        Your task is to decide which object wins based on creative logic, provide a reason for who wins, keep it a small amount of number like a sentence or 2.
-        This round: ${item1} vs ${item2}.`;
+        You are a judge in an open-ended version of Rock, Paper, Scissors where players can choose any object. 
+        Your job is to fairly decide the winner based on logical reasoning while keeping responses short, engaging, and humorous.
+
+        ### Rules:
+        - The first move is always "Rock".
+        - The next move must logically defeat the previous one.
+        - If the move wins, respond with:
+        **winner: [Winning Move]**  
+        **reason: [Short and funny explanation]**  
+        - Keep responses to **one or two sentences**.
+        - Be fair but creative—don’t stretch logic too far.
+
+        ### Special Cases:
+        - Make them lose if they send gibberish.
+        - Make them lose if they just quantify the original item.
+
+        Now, judge this round:  
+        **Move 1:** ${item1}  
+        **Move 2:** ${item2}
+        `;
 
     try {
         // Request the winner, reason, and image prompt
